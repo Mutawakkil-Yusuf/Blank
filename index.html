@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#faf5ec" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+  <meta name="description" content="One page. One text field. That's the whole thing." />
+
+  <title>Blank — a quiet place to write</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Blank" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script>
+    // Apply the stored theme before first paint so there's no flash.
+    // Also hide the arriving elements until the arrival animation is ready.
+    (function () {
+      try {
+        var stored = localStorage.getItem("blank_theme");
+        var system = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+        document.documentElement.dataset.theme = stored || system;
+      } catch (e) {
+        document.documentElement.dataset.theme = "light";
+      }
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("pre-arrival");
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <span class="wordmark">blank</span>
+
+      <nav class="topbar-nav" aria-label="App">
+        <button id="nav-toggle" class="link-btn" type="button">earlier pages</button>
+        <button
+          id="theme-toggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Switch theme"
+        >
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Today -->
+      <section id="view-today" class="view">
+        <header class="greeting">
+          <h1 id="greeting-word" class="greeting-word">Good morning</h1>
+          <p id="greeting-date" class="greeting-date"></p>
+        </header>
+
+        <article id="page" class="page">
+          <div id="empty" class="empty" aria-hidden="true">
+            <p class="empty-title">A fresh page.</p>
+            <p class="empty-hint">begin whenever you're ready</p>
+          </div>
+          <div
+            id="editor"
+            class="editor"
+            contenteditable="true"
+            spellcheck="false"
+            autocorrect="off"
+            autocapitalize="sentences"
+            role="textbox"
+            aria-multiline="true"
+            aria-label="Today's page"
+          ></div>
+        </article>
+
+        <p id="save-status" class="save-status" role="status" aria-live="polite">
+          <span class="save-status-dot" aria-hidden="true"></span>
+          <span id="save-text">saved</span>
+        </p>
+      </section>
+
+      <!-- History -->
+      <section id="view-history" class="view" hidden>
+        <header class="history-head">
+          <h1 class="history-title">Earlier pages</h1>
+          <div class="history-meta">
+            <span id="history-count" class="history-count"></span>
+            <button id="export-btn" class="outline-btn" type="button" title="Download every page as Markdown">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <path d="m7 10 5 5 5-5"/>
+                <path d="M12 15V3"/>
+              </svg>
+              export
+            </button>
+          </div>
+        </header>
+        <div id="history-list" class="history-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

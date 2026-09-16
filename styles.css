@@ -1,0 +1,807 @@
+/* ═════════════════════════════════════════════════════════════════
+   Blank — a quiet place to write
+   ─────────────────────────────────────────────────────────────────
+   Contents
+     1.  Tokens
+     2.  Base
+     3.  Grain
+     4.  Layout
+     5.  Topbar
+     6.  Greeting
+     7.  Page (editor)
+     8.  Save status
+     9.  History
+    10.  Reading banner
+    11.  Toast
+    12.  Motion
+    13.  Focus & selection
+    14.  Responsive
+    15.  Reduced motion
+   ═════════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────────────
+   1. Tokens
+   ───────────────────────────────────────────────────────────────── */
+
+:root,
+[data-theme="light"] {
+  --paper: #faf5ec;
+  --paper-2: #f3ecdd;
+  --card: #fffdf8;
+
+  --ink: #2a2520;
+  --ink-2: #544d42;
+  --muted: #968a76;
+
+  --line: #ebe3d1;
+  --line-2: #ddd2bb;
+
+  --warm: #c47a3f;
+  --warm-soft: rgba(196, 122, 63, 0.07);
+  --warm-line: rgba(196, 122, 63, 0.18);
+
+  --grain: 0.025;
+  --shadow-sm: rgba(42, 37, 32, 0.04);
+  --shadow-md: rgba(42, 37, 32, 0.06);
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --paper: #111318;
+  --paper-2: #16191f;
+  --card: #1a1e24;
+
+  --ink: #e8e6e1;
+  --ink-2: #a9a9ab;
+  --muted: #6b7076;
+
+  --line: #22262d;
+  --line-2: #2c3038;
+
+  --warm: #d9a679;
+  --warm-soft: rgba(217, 166, 121, 0.08);
+  --warm-line: rgba(217, 166, 121, 0.18);
+
+  --grain: 0.04;
+  --shadow-sm: rgba(0, 0, 0, 0.25);
+  --shadow-md: rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+:root {
+  --display: "Fraunces", ui-serif, Georgia, serif;
+  --serif: "Newsreader", ui-serif, Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   2. Base
+   ───────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 400ms ease, color 400ms ease;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+[hidden] { display: none !important; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   3. Grain
+   ───────────────────────────────────────────────────────────────── */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  transition: opacity 400ms ease;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   4. Layout
+   ───────────────────────────────────────────────────────────────── */
+
+.app {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  min-height: 100%;
+  padding-top: calc(2rem + env(safe-area-inset-top));
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   5. Topbar
+   ───────────────────────────────────────────────────────────────── */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.wordmark {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 400ms ease;
+}
+
+.wordmark::after {
+  content: ".";
+  color: var(--warm);
+  transition: color 400ms ease;
+}
+
+.topbar-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.link-btn {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--muted);
+  transition: color 160ms, background-color 160ms;
+}
+
+.link-btn:hover {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+.icon-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 160ms, background-color 160ms;
+}
+
+.icon-btn:hover {
+  color: var(--warm);
+  background: var(--warm-soft);
+}
+
+.icon-btn svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 15px;
+  height: 15px;
+  display: block;
+  transition:
+    opacity 320ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.icon-btn .icon-sun {
+  opacity: 0;
+  transform: rotate(-30deg) scale(0.85);
+}
+.icon-btn .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+[data-theme="dark"] .icon-btn .icon-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+[data-theme="dark"] .icon-btn .icon-moon {
+  opacity: 0;
+  transform: rotate(30deg) scale(0.85);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   6. Greeting
+   ───────────────────────────────────────────────────────────────── */
+
+.greeting {
+  text-align: center;
+  padding: 2.25rem 0 2rem;
+}
+
+.greeting-word {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.9rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--warm);
+  margin-bottom: 0.4rem;
+  transition: color 400ms ease;
+}
+
+.greeting-date {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 400ms ease;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   7. Page (editor)
+   ───────────────────────────────────────────────────────────────── */
+
+.page {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2.75rem 2.5rem 3rem;
+  min-height: 26rem;
+  box-shadow:
+    0 1px 2px var(--shadow-sm),
+    0 4px 20px var(--shadow-sm),
+    0 20px 60px var(--shadow-md);
+  cursor: text;
+  transition:
+    background-color 400ms ease,
+    border-color 400ms ease,
+    box-shadow 400ms ease;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2.5rem;
+  right: 2.5rem;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--warm-line) 30%,
+    var(--warm-line) 70%,
+    transparent 100%
+  );
+  transition: background 400ms ease;
+}
+
+.page.reading { cursor: default; }
+
+.editor {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  letter-spacing: -0.003em;
+  color: var(--ink);
+  caret-color: var(--warm);
+  outline: none;
+  min-height: 20rem;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  transition: color 400ms ease;
+}
+
+.editor p { margin: 0 0 1.25em 0; }
+.editor p:last-child { margin-bottom: 0; }
+
+.editor em,
+.editor i {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.editor strong,
+.editor b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.editor a {
+  color: var(--warm);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.page.reading .editor { color: var(--ink-2); }
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 400ms ease;
+}
+
+.page.has-content .empty { opacity: 0; }
+
+.empty-title {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  margin-bottom: 0.85rem;
+  transition: color 400ms ease;
+}
+
+.empty-hint {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--line-2);
+  transition: color 400ms ease;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   8. Save status
+   ───────────────────────────────────────────────────────────────── */
+
+.save-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 400ms ease, color 400ms ease;
+}
+
+.save-status.visible { opacity: 1; }
+.save-status.error { color: var(--warm); }
+
+.save-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--warm);
+  opacity: 0.5;
+  transition: background 400ms ease;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   9. History
+   ───────────────────────────────────────────────────────────────── */
+
+.history-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.history-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 400ms ease;
+}
+
+.history-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.history-count {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  transition: color 400ms ease;
+}
+
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  transition: color 160ms, background-color 160ms, border-color 160ms;
+}
+
+.outline-btn:hover:not(:disabled) {
+  color: var(--warm);
+  background: var(--warm-soft);
+  border-color: var(--warm-line);
+}
+
+.outline-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.outline-btn svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.entry {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.15rem 1.5rem;
+  cursor: pointer;
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.entry:hover {
+  transform: translateY(-1px);
+  border-color: var(--warm-line);
+  box-shadow:
+    0 1px 2px var(--shadow-sm),
+    0 8px 20px var(--shadow-sm);
+}
+
+.entry-date {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+  transition: color 400ms ease;
+}
+
+.entry-when {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-left: 0.6rem;
+}
+
+.entry-preview {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  transition: color 400ms ease;
+}
+
+.history-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--muted);
+  transition: color 400ms ease;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   10. Reading banner
+   ───────────────────────────────────────────────────────────────── */
+
+.reading-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.55rem 0.75rem 0.55rem 0.9rem;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: background-color 400ms ease, border-color 400ms ease;
+}
+
+.reading-banner-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reading-banner-label strong {
+  color: var(--warm);
+  font-weight: 400;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   11. Toast
+   ───────────────────────────────────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(1rem);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+  transition:
+    opacity 300ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   12. Motion
+   ─────────────────────────────────────────────────────────────────
+
+   Six small moments. Every one under 800ms. Nothing bounces.
+
+   12.1  Arrival         first paint, staggered by element
+   12.2  Breath          empty state waits patiently
+   12.3  Save dot        one pulse, then stillness
+   12.4  View dissolve   160ms out, 200ms in
+   12.5  History stagger 50ms per entry, capped at 8
+   12.6  Theme toggle    (handled in section 5, above)
+   ───────────────────────────────────────────────────────────────── */
+
+/* ─── 12.1 · Arrival ─────────────────────────────────────────────── */
+
+html.pre-arrival .wordmark,
+html.pre-arrival .wordmark::after,
+html.pre-arrival .greeting,
+html.pre-arrival .page {
+  opacity: 0;
+}
+
+html.arriving .wordmark {
+  animation: arrive-word 300ms ease both;
+}
+html.arriving .wordmark::after {
+  animation: arrive-dot 280ms ease 320ms both;
+}
+html.arriving .greeting {
+  animation: arrive-greet 500ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
+html.arriving .page {
+  animation: arrive-page 700ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+}
+
+@keyframes arrive-word {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes arrive-dot {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes arrive-greet {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes arrive-page {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── 12.2 · Breath ──────────────────────────────────────────────── */
+
+.page:not(.has-content) .empty {
+  animation: breathe 7000ms ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+
+/* ─── 12.3 · Save dot ────────────────────────────────────────────── */
+
+.save-status-dot.pulse {
+  animation: dot-pulse 600ms cubic-bezier(0.34, 1.26, 0.5, 1);
+}
+
+@keyframes dot-pulse {
+  0%   { transform: scale(1);    opacity: 0.5; }
+  40%  { transform: scale(1.35); opacity: 1;   }
+  100% { transform: scale(1);    opacity: 0.5; }
+}
+
+/* ─── 12.4 · View dissolve ───────────────────────────────────────── */
+
+.view-fade-out {
+  animation: view-fade-out 160ms ease forwards;
+}
+
+.view-fade-in {
+  animation: view-fade-in 200ms ease both;
+}
+
+@keyframes view-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes view-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── 12.5 · History stagger ─────────────────────────────────────── */
+
+.entry {
+  animation: entry-in 500ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+@keyframes entry-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   13. Focus & selection
+   ───────────────────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--warm);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.editor:focus-visible { outline: none; }
+
+::selection {
+  background: var(--warm-soft);
+  color: var(--ink);
+}
+
+.editor ::selection { background: var(--warm-soft); }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   14. Responsive
+   ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .app {
+    padding: 1.25rem 1rem 3rem;
+    padding-top: calc(1.25rem + env(safe-area-inset-top));
+    padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+  }
+
+  .greeting { padding: 1.75rem 0 1.5rem; }
+  .greeting-word { font-size: 1.55rem; }
+
+  .page {
+    padding: 2rem 1.5rem 2.25rem;
+    border-radius: 16px;
+    min-height: 22rem;
+  }
+
+  .page::before { left: 1.5rem; right: 1.5rem; }
+
+  .editor { font-size: 1.05rem; min-height: 16rem; }
+  .empty-title { font-size: 1.25rem; }
+
+  .icon-btn { width: 40px; height: 40px; }
+  .icon-btn svg { width: 17px; height: 17px; }
+
+  .link-btn { padding: 0.5rem 0.85rem; }
+
+  .history-head { flex-wrap: wrap; gap: 0.5rem; }
+
+  .entry { padding: 1.05rem 1.25rem; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   15. Reduced motion
+   ───────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html.pre-arrival .wordmark,
+  html.pre-arrival .wordmark::after,
+  html.pre-arrival .greeting,
+  html.pre-arrival .page {
+    opacity: 1;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
