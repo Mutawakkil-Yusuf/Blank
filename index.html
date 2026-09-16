@@ -40,6 +40,12 @@
         document.documentElement.dataset.theme = "light";
       }
 
+      try {
+        if (localStorage.getItem("blank_sound") === "on") {
+          document.documentElement.classList.add("sound-on");
+        }
+      } catch (e) {}
+
       if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         document.documentElement.classList.add("pre-arrival");
       }
@@ -55,6 +61,25 @@
 
       <nav class="topbar-nav" aria-label="App">
         <button id="nav-toggle" class="link-btn" type="button">earlier pages</button>
+        <button
+          id="sound-toggle"
+          class="icon-btn"
+          type="button"
+          aria-label="Toggle sound"
+          aria-pressed="false"
+        >
+          <svg class="icon-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z"/>
+            <path d="m22 9-6 6"/>
+            <path d="m16 9 6 6"/>
+          </svg>
+          <svg class="icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+        </button>
+
         <button
           id="theme-toggle"
           class="icon-btn"
@@ -98,10 +123,15 @@
           ></div>
         </article>
 
-        <p id="save-status" class="save-status" role="status" aria-live="polite">
-          <span class="save-status-dot" aria-hidden="true"></span>
-          <span id="save-text">saved</span>
-        </p>
+        <div class="save-row">
+          <p id="save-status" class="save-status" role="status" aria-live="polite">
+            <span class="save-status-dot" aria-hidden="true"></span>
+            <span id="save-text">saved</span>
+          </p>
+          <button id="close-day" class="close-day" type="button" hidden>
+            done for today →
+          </button>
+        </div>
       </section>
 
       <!-- History -->
@@ -110,6 +140,15 @@
           <h1 class="history-title">Earlier pages</h1>
           <div class="history-meta">
             <span id="history-count" class="history-count"></span>
+            <button id="pdf-btn" class="outline-btn" type="button" title="Save every page as a PDF">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6"/>
+                <path d="M9 15h6"/>
+                <path d="M9 11h2"/>
+              </svg>
+              pdf
+            </button>
             <button id="export-btn" class="outline-btn" type="button" title="Download every page as Markdown">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -127,6 +166,7 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <script src="sound.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

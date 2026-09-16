@@ -37,6 +37,7 @@ variables.
 index.html      the app
 styles.css      all styling
 app.js          all behavior
+sound.js        three synthesized sounds
 manifest.json   PWA metadata
 sw.js           service worker (offline)
 icon.svg        app icon
@@ -49,13 +50,13 @@ No framework. No bundler. No dependencies. Plain HTML, CSS, and JavaScript.
 Everything lives in `localStorage` on the device.
 
 ```
-blank_entry_YYYY-MM-DD    the writing for that day
+blank_entry_YYYY-MM-DD    { html, createdAt, updatedAt } for that day
 blank_theme               "light" or "dark"
+blank_sound               "on" or "off"
 ```
 
 Nothing leaves the device. Clearing browser data deletes everything. If you
-want a backup, use **export** in the history view — it downloads every
-entry as a single Markdown file.
+want a backup, use **export** or **pdf** in the history view.
 
 ## Keyboard
 
@@ -65,6 +66,25 @@ entry as a single Markdown file.
 Enter          new paragraph
 Shift + Enter  line break inside the current paragraph
 ```
+
+## Sound
+
+Three sounds, all synthesized with the Web Audio API. No audio files.
+
+- **open** — a soft breath. Returning to today.
+- **page** — a paper turn. Any view change.
+- **close** — a thud. "Done for today."
+
+Off by default. Toggle with the speaker in the topbar.
+
+## Export
+
+Two formats, both from the history view:
+
+- **export** — a `.md` file with every entry, dated and formatted.
+  Preserves italics, bold, headings, links, lists.
+- **pdf** — opens a print-optimized document and triggers your browser's
+  Save-as-PDF dialog. Each entry is one page. Honors your current theme.
 
 ## Not included
 

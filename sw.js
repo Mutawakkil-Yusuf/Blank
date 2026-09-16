@@ -3,13 +3,14 @@
    Caches the shell so the app runs offline after the first visit.
    ═════════════════════════════════════════════════════════════════ */
 
-const CACHE = "blank-v1";
+const CACHE = "blank-v2";
 
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./sound.js",
   "./manifest.json",
   "./icon.svg",
 ];
